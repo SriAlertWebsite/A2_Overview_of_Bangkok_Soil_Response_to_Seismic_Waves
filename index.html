@@ -43,6 +43,7 @@
 .map-legend .legend-blue{display:inline-block;vertical-align:middle;width:13px;height:13px;min-width:13px;margin-right:7px}
 .leaflet-popup-content{width:360px!important;max-width:calc(100vw - 60px)!important;min-width:0!important}.hvsr-pop-table{table-layout:fixed}.hvsr-pop-table td{overflow-wrap:anywhere}.leaflet-popup-content-wrapper{border:1px solid #dbe4ee}
 @media(max-width:750px){.leaflet-popup-content{width:min(340px,calc(100vw - 62px))!important}.hvsr-pop-table{font-size:12px}.hvsr-pop-title{font-size:16px}.map-legend{flex-wrap:wrap}}
+.hvsr-image-link{display:inline-block;color:#0665a4!important;text-decoration:underline!important;font-weight:700;padding:4px 0;overflow-wrap:anywhere}.hvsr-image-link:hover{color:#004775!important}
 </style></head><body><div class="app">
 <main class="workspace">
 <section aria-label="แผนที่จุดสำรวจ HVSR" class="map-area">
@@ -56,7 +57,7 @@
 <div class="side-header"><div><h2>รายละเอียดแผนที่สำรวจ</h2></div><button aria-label="ปิดแผงข้อมูล" class="icon-btn" id="sideClose" type="button">×</button></div>
 <div class="accent"></div>
 <div class="info-card"><h3>ข้อมูลที่แสดงบนแผนที่</h3>
-<div class="measure"><span class="legend-triangle"></span><div><b>HVSR — สามเหลี่ยมสีแดง</b>คลิกสามเหลี่ยมสีแดงเพื่อดูข้อมูลการสำรวจ เช่น รหัสจุด ชื่อจุด ค่า f₀, T₀, H, Vs30 และ Vs100 ตามข้อมูลที่มีอยู่</div></div>
+<div class="measure"><span class="legend-triangle"></span><div><b>HVSR — สามเหลี่ยมสีแดง</b>คลิกสามเหลี่ยมสีแดงเพื่อดูข้อมูลการสำรวจ เช่น รหัสจุด ชื่อจุด ค่า f₀, T₀, H, Vs30, Vs100 และลิงก์รูปภาพ Vs Profile ตามข้อมูลที่มีอยู่</div></div>
 <div class="measure"><span class="legend-blue"></span><div><b>Test point — วงกลมสีฟ้า</b>คลิกวงกลมสีฟ้าเพื่อดูรหัส ชื่อจุด และพิกัดตำแหน่งจุดทดสอบ</div></div>
 <div class="measure"><span class="legend-square"></span><div><b>Bangkok_Districts</b>รูปสี่เหลี่ยมสีขาวขอบดำใช้แทนชั้นข้อมูลขอบเขตเขตกรุงเทพมหานคร เพื่ออ้างอิงตำแหน่งพื้นที่ศึกษา</div></div>
 <div class="measure"><span class="legend-map"></span><div><b>OpenStreetMap2</b>แผนที่พื้นหลังใช้สำหรับอ้างอิงถนนและตำแหน่งที่ตั้งของจุดทดสอบ</div></div>
@@ -66,6 +67,9 @@
 <div class="measure"><span class="num">f₀</span><div><b>ความถี่พื้นฐานของชั้นดิน (Hz)</b>ค่าความถี่พื้นฐานของชั้นดินที่ได้จากการวิเคราะห์การสั่นพื้นฐานของชั้นดิน</div></div>
 <div class="measure"><span class="num">T₀</span><div><b>คาบการสั่นพื้นฐานของชั้นดิน (s)</b>ค่าคาบการสั่นพื้นฐานของชั้นดินที่สัมพันธ์กับความถี่พื้นฐาน (T₀ = 1/f₀)</div></div>
 <div class="measure"><span class="num">H</span><div><b>ความสูงอาคารโดยประมาณ (m)</b>ความสูงอาคารโดยประมาณที่มีคาบการสั่นสอดคล้องกับชั้นดิน ไม่ใช่ความลึกของชั้นดิน</div></div>
+<div class="measure"><span class="num">Vs₃₀</span><div><b>ความเร็วคลื่นเฉือนเฉลี่ยในช่วงความลึก 30 เมตร (m/s)</b>ค่าความเร็วคลื่นเฉือนเฉลี่ยของชั้นดินในช่วงความลึก 0–30 เมตร ใช้ประกอบการพิจารณาคุณสมบัติของชั้นดินบริเวณตื้น</div></div>
+<div class="measure"><span class="num">Vs₁₀₀</span><div><b>ความเร็วคลื่นเฉือนเฉลี่ยในช่วงความลึก 100 เมตร (m/s)</b>ค่าความเร็วคลื่นเฉือนเฉลี่ยของชั้นดินในช่วงความลึก 0–100 เมตร ใช้ประกอบการศึกษาคุณสมบัติชั้นดินในระดับลึกขึ้น</div></div>
+<div class="measure"><span class="num">Vs</span><div><b>Image</b>รูปภาพกราฟแสดงการเปลี่ยนแปลงความเร็วคลื่นเฉือนตามความลึกของชั้นดิน Vs Profile</div></div>
 </div>
 <div class="side-foot">ได้รับการสนับสนุนจาก สกสว. · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a></div>
 </div>
@@ -110,6 +114,23 @@
         <script>
         function escMap(value){if(value===null||value===undefined||value==='')return '—';return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
         function mapRow(label,value){return '<tr><th>'+escMap(label)+'</th><td>'+escMap(value)+'</td></tr>';}
+        function mapGroupedRow(label,value){
+            var raw = (value === null || value === undefined) ? '' : String(value).trim();
+            // Group only lists of numeric values; preserve the original numbers.
+            var display = /^[-+]?\d+(?:\.\d+)?(?:\s*,\s*[-+]?\d+(?:\.\d+)?)+$/.test(raw)
+                ? '[' + raw.split(',').map(function(x){return x.trim();}).join(', ') + ']'
+                : value;
+            return mapRow(label,display);
+        }
+        function mapImageRow(value){
+            var raw = (value === null || value === undefined) ? '' : String(value).trim();
+            var urls = raw.match(/https?:\/\/[^\s,;]+/gi) || [];
+            var links = urls.filter(function(url){try {var u = new URL(url); return u.protocol === 'https:' || u.protocol === 'http:';} catch(e){return false;}});
+            var content = links.length ? links.map(function(url, i){
+                return '<a class="hvsr-image-link" href="'+escMap(url)+'" target="_blank" rel="noopener noreferrer">เปิดรูปภาพ'+(links.length>1?' '+(i+1):'')+' ↗</a>';
+            }).join('<br>') : (raw ? escMap(raw) : '—');
+            return '<tr><th>Image</th><td>'+content+'</td></tr>';
+        }
         var map = L.map('map', {
             zoomControl:false, maxZoom:19, minZoom:1
         }).fitBounds([[13.535059914488064,100.3107129259166],[13.837389874121722,100.85860704640865]]);
@@ -343,12 +364,12 @@
             '<table class="hvsr-pop-table">'+
             mapRow('รหัสจุดสำรวจ',p.ID)+mapRow('ชื่อจุดสำรวจ',p.Name)+
             mapRow('UTM_E',p.UTM_E)+mapRow('UTM_N',p.UTM_N)+
-            mapRow('ความถี่พื้นฐาน f₀ (Hz)',p['f0 (HZ)'])+
-            mapRow('คาบพื้นฐาน T₀ (s)',p['T0 (s)'])+
-            mapRow('ความสูงอาคารโดยประมาณ H (m)',p['H (m)'])+
+            mapGroupedRow('ความถี่พื้นฐาน f₀ (Hz)',p['f0 (HZ)'])+
+            mapGroupedRow('คาบพื้นฐาน T₀ (s)',p['T0 (s)'])+
+            mapGroupedRow('ความสูงอาคารโดยประมาณ H (m)',p['H (m)'])+
             mapRow('Vs30 (m/s)',p['Vs30 (m/s)'])+
             mapRow('Vs100 (m/s)',p['Vs100(m/s)'])+
-            mapRow('Image',p.Image)+
+            mapImageRow(p.Image)+
             '</table></div>';
             layer.bindPopup(content,{maxWidth:420,minWidth:300,maxHeight:440,closeButton:true,autoPan:true});
         }
