@@ -122,15 +122,27 @@
                 : value;
             return mapRow(label,display);
         }
-        function mapImageRow(value){
-            var raw = (value === null || value === undefined) ? '' : String(value).trim();
+        // Open locally hosted shear-wave velocity profiles instead of ImgBB.
+        // IDs TP01..TP06 (and e.g. TP2_01_300) map to images/TP-01.png..TP-06.png.
+        function mapImageRow(value, pointId){
+            var id = pointId == null ? '' : String(pointId).trim();
+            var match = /^TP[\s_-]*0?([1-6])(?=$|[_\s-])/i.exec(id);
+            var localFile = match ? 'images/TP-0' + match[1] + '.png' : null;
+            var raw = value == null ? '' : String(value).trim();
+            // Keep the original link for records without a known local profile.
             var urls = raw.match(/https?:\/\/[^\s,;]+/gi) || [];
-            var links = urls.filter(function(url){try {var u = new URL(url); return u.protocol === 'https:' || u.protocol === 'http:';} catch(e){return false;}});
-            var content = links.length ? links.map(function(url, i){
-                return '<a class="hvsr-image-link" href="'+escMap(url)+'" target="_blank" rel="noopener noreferrer">เปิดรูปภาพ'+(links.length>1?' '+(i+1):'')+' ↗</a>';
-            }).join('<br>') : (raw ? escMap(raw) : '—');
+            var links = urls.filter(function(url){
+                try { var u = new URL(url); return u.protocol === 'https:' || u.protocol === 'http:'; }
+                catch(e){ return false; }
+            });
+            var content = localFile
+                ? '<a class="hvsr-image-link" href="'+localFile+'" target="_blank" rel="noopener noreferrer">เปิดรูปภาพ Vs Profile ↗</a>'
+                : links.length ? links.map(function(url,i){
+                    return '<a class="hvsr-image-link" href="'+escMap(url)+'" target="_blank" rel="noopener noreferrer">เปิดรูปภาพ'+(links.length>1?' '+(i+1):'')+' ↗</a>';
+                  }).join('<br>') : (raw ? escMap(raw) : '—');
             return '<tr><th>Image</th><td>'+content+'</td></tr>';
         }
+
         var map = L.map('map', {
             zoomControl:false, maxZoom:19, minZoom:1
         }).fitBounds([[13.535059914488064,100.3107129259166],[13.837389874121722,100.85860704640865]]);
@@ -369,7 +381,7 @@
             mapGroupedRow('ความสูงอาคารโดยประมาณ H (m)',p['H (m)'])+
             mapRow('Vs30 (m/s)',p['Vs30 (m/s)'])+
             mapRow('Vs100 (m/s)',p['Vs100(m/s)'])+
-            mapImageRow(p.Image)+
+            mapImageRow(p.Image,p.ID)+
             '</table></div>';
             layer.bindPopup(content,{maxWidth:420,minWidth:300,maxHeight:440,closeButton:true,autoPan:true});
         }
